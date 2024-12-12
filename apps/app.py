@@ -6,13 +6,16 @@
 """
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+from apps.middleware.timer_middleware import TimerMiddleware
+from uvicorn.loops import auto
 
 
 def create_app():
     app = FastAPI(debug=True)
     app.debug = True
     register_router(app)
-
+    register_middleware(app)
 
     return app
 
@@ -20,5 +23,16 @@ def create_app():
 def register_router(app: FastAPI):
     """注册路由"""
     from apps.api.router import create_router
-    app.include_router(create_router(), prefix='/v1')
+    app.include_router(create_router(), prefix='/v1/api')
     return
+
+
+def register_middleware(app: FastAPI):
+    app.add_middleware(
+        CORSMiddleware,  # noqa
+        allow_origins=['*'],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    app.add_middleware(TimerMiddleware)

@@ -8,9 +8,6 @@
 from apps.app import create_app
 from uvicorn import run
 
-
-
-
 app = create_app()
 
 if __name__ == '__main__':
