@@ -8,4 +8,4 @@
 
 class Settings:
     FilePath = 'D:\\project\\bookserver\\books\\'
-    OpenUrl = '/open/docs'
+    OpenDocsUrl = '/open/docs'

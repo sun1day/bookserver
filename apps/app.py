@@ -13,7 +13,7 @@ from settings.settings import Settings
 
 
 def create_app():
-    app = FastAPI(openapi_url=Settings.OpenUrl)
+    app = FastAPI(docs_url=Settings.OpenDocsUrl, openapi_url=None, openapi_tags=None)
     register_router(app)
     register_middleware(app)
     auto.auto_loop_setup()
