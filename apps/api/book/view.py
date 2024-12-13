@@ -4,8 +4,12 @@
 @Auth: Rrsgdl
 @Date: 2024/10/15-14:44
 """
-from fastapi import APIRouter, UploadFile, Request
+from fastapi import APIRouter, UploadFile, Request, Depends
+from fastapi.responses import ORJSONResponse
 import aiofiles
+from apps.dependencies import get_settings
+import os
+from apps.service.book import BookService
 
 book_router = APIRouter(prefix='/book')
 
@@ -16,10 +20,12 @@ def books(page_no: int, page_size: int):
 
 
 @book_router.post('/books')
-async def books(request: Request, book: UploadFile):
+async def books(book: UploadFile, settings: Depends(get_settings)) -> ORJSONResponse:
     name = book.filename
-    print(f'D:\\project\\bookserver\\books\\{name}')
-    async with aiofiles.open(f'D:\\project\\bookserver\\books\\{name}', mode='wb') as f:
+    file_path = f'{settings.FilePath}{os.path.sep}{name}'
+    if BookService.file_is_existed(file_path):
+        return ORJSONResponse(content={'data': {}, 'error_msg': '文件已上传成功', 'code': 1})
+    async with aiofiles.open(f'{settings.FilePath}{os.path.sep}{name}', mode='wb') as f:
         while content := await book.read(size=1024 * 10):  # 每次读取 1KB
             await f.write(content)
-    return 'OK'
+    return ORJSONResponse(content={'data': {}, 'error_msg': '文件已上传成功', 'code': 1})

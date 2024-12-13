@@ -11,12 +11,14 @@ from apps.middleware.timer_middleware import TimerMiddleware
 from uvicorn.loops import auto
 
 
+config: dict
+
+
 def create_app():
-    app = FastAPI(debug=True)
-    app.debug = True
+    app = FastAPI()
     register_router(app)
     register_middleware(app)
-
+    auto.auto_loop_setup()
     return app
 
 

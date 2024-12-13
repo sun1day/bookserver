@@ -6,7 +6,11 @@
 """
 
 # dependencies
-from fastapi import Request
-from
+import functools
+from settings import settings
+from typing import Type
 
-def get_config(request: )
+
+@functools.lru_cache
+def get_settings() -> Type[settings.Settings]:
+    return settings.Settings
