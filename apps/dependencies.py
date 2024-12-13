@@ -12,5 +12,5 @@ from typing import Type
 
 
 @functools.lru_cache
-def get_settings() -> Type[settings.Settings]:
+def get_settings():
     return settings.Settings

@@ -20,7 +20,7 @@ def books(page_no: int, page_size: int):
 
 
 @book_router.post('/books')
-async def books(book: UploadFile, settings: Depends(get_settings)) -> ORJSONResponse:
+async def books(book: UploadFile, settings=Depends(get_settings)) -> ORJSONResponse:
     name = book.filename
     file_path = f'{settings.FilePath}{os.path.sep}{name}'
     if BookService.file_is_existed(file_path):
