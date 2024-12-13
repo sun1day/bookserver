@@ -9,3 +9,4 @@
 class Settings:
     FilePath = 'D:\\project\\bookserver\\books\\'
     OpenDocsUrl = '/open/docs'
+    OpenApiUrl = '/open/openapi.json'

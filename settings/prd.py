@@ -9,4 +9,5 @@
 class Settings:
     FilePath = '/home/files/books'
     OpenDocsUrl = '/open/docs'
+    OpenApiUrl = '/open/openapi.json'
 
