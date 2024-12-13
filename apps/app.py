@@ -9,13 +9,11 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from apps.middleware.timer_middleware import TimerMiddleware
 from uvicorn.loops import auto
-
-
-config: dict
+from settings.settings import Settings
 
 
 def create_app():
-    app = FastAPI()
+    app = FastAPI(openapi_url=Settings.OpenUrl)
     register_router(app)
     register_middleware(app)
     auto.auto_loop_setup()

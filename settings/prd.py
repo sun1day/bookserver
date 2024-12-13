@@ -8,3 +8,5 @@
 
 class Settings:
     FilePath = '/home/files/books'
+    OpenUrl = '/open/docs'
+
