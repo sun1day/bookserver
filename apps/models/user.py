@@ -12,7 +12,7 @@ from sqlalchemy import BIGINT, VARCHAR, Index
 
 class User(Base):
     id = mapped_column(BIGINT, primary_key=True, autoincrement=True)
-    account = mapped_column(VARCHAR(64), nullable=False, index=True, comment="账号")
+    account = mapped_column(VARCHAR(64), nullable=False, comment="账号")
     password = mapped_column(VARCHAR(256), nullable=False, comment="密码")
 
     __table_args__ = (Index("idx_account", "account", unique=True),)  # 创建唯一索引

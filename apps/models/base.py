@@ -6,6 +6,7 @@
 """
 import datetime as dt
 from datetime import datetime
+import typing as t
 
 from sqlalchemy import (
     create_engine,
@@ -18,7 +19,7 @@ from sqlalchemy import (
     inspect,
 )
 from apps.dependencies import get_settings
-from sqlalchemy.orm import DeclarativeBase, mapped_column, declared_attr
+from sqlalchemy.orm import DeclarativeBase, mapped_column, declared_attr, sessionmaker
 from apps.utils.util import hump2underline
 
 settings = get_settings()
@@ -28,6 +29,10 @@ engine = create_engine(
     **settings.SqlalchemyPoolSettings,
     echo=settings.Debug,
     insertmanyvalues_page_size=500,
+)
+
+LocalSession = sessionmaker(
+    engine, autoflush=False, autocommit=False, expire_on_commit=False
 )
 
 # 索引命名映射
@@ -92,3 +97,6 @@ class Base(ClsTableMiXin, DeclarativeBase):
             f"{type(self).__name__}"
             f'({",".join([f"{k}={getattr(self, k)}" for k in self.__table__.columns.keys()])})'
         )
+
+    def is_deleted(self) -> bool:
+        return self.status == 0
