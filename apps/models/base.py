@@ -7,7 +7,16 @@
 import datetime as dt
 from datetime import datetime
 
-from sqlalchemy import create_engine, URL, pool, DATETIME, func, BIGINT, MetaData
+from sqlalchemy import (
+    create_engine,
+    URL,
+    pool,
+    DATETIME,
+    func,
+    BIGINT,
+    MetaData,
+    inspect,
+)
 from apps.dependencies import get_settings
 from sqlalchemy.orm import DeclarativeBase, mapped_column, declared_attr
 from apps.utils.util import hump2underline
@@ -17,7 +26,8 @@ engine = create_engine(
     URL(**settings.SqlalchemyUrlSettings),
     poolclass=pool.QueuePool,
     **settings.SqlalchemyPoolSettings,
-    echo=settings.Debug
+    echo=settings.Debug,
+    insertmanyvalues_page_size=500,
 )
 
 # 索引命名映射
@@ -31,10 +41,29 @@ constraint_naming_conventions = {
 
 
 class ClsTableMiXin:
-    @declared_attr
+    @declared_attr.directive
     def __tablename__(self):
         model_name = type(self).__name__
         return hump2underline(model_name)
+
+    @classmethod
+    def create(cls, **kwargs):
+        self = cls()
+        for k, v in kwargs:
+            if hasattr(self, k):
+                setattr(self, k, v)
+        return self
+
+    def update(self, **kwargs):
+        for key in kwargs.keys():
+            if hasattr(self, key):
+                setattr(self, key, kwargs[key])
+        return self
+
+    def to_dict(self):
+        # 返回所有字段字典,日期自动转成可读形式Y-m-d H:M:S
+        # 用法 query.to_dict()
+        return {d: getattr(self, d) for d in inspect(self).columns.keys()}
 
 
 class Base(ClsTableMiXin, DeclarativeBase):
@@ -53,3 +82,13 @@ class Base(ClsTableMiXin, DeclarativeBase):
         default_factory=datetime.utcnow,
         server_onupdate=func.now(),
     )
+    delete_time = mapped_column(DATETIME(timezone=True))  # 删除时间
+
+    def soft_delete(self):
+        self.status = 0
+
+    def __repr__(self):
+        return (
+            f"{type(self).__name__}"
+            f'({",".join([f"{k}={getattr(self, k)}" for k in self.__table__.columns.keys()])})'
+        )
