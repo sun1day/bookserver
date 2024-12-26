@@ -7,6 +7,8 @@
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
+
+from apps.middleware.exception_middleware import ExceptionMiddleware
 from apps.middleware.timer_middleware import TimerMiddleware
 from uvicorn.loops import auto
 from settings.settings import Settings
@@ -35,4 +37,8 @@ def register_middleware(app: FastAPI):
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # 错误处理和时间需要在最后
+    app.add_middleware(ExceptionMiddleware)
     app.add_middleware(TimerMiddleware)
+

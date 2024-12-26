@@ -18,9 +18,10 @@ class TimerMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
 
         start_time = time.monotonic()
+        logger.info(f'begin request, url: {request.url}, req: {request.json()}')
         try:
             return await call_next(request)
         except Exception:
             raise
         finally:
-            logger.info(f'{request.url} cost{time.monotonic() - start_time}s ')
+            logger.info(f'{request.url} cost: {time.monotonic() - start_time}s ')

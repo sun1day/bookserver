@@ -14,8 +14,9 @@ from apps.service.security import Security
 from sqlalchemy.orm import Session
 from typing import Annotated
 from apps.dependencies import SessionDep, SettingsDep
-from apps.models.user import User
-from ...lib.exceptions.exception import UserNotExistedException
+from apps.db_models.user import User
+from apps.lib.exceptions.exception import UserNotExistedException
+from apps.lib.response import SuccessResponse, FailResponse
 
 user_router = APIRouter(prefix="/user")
 
@@ -33,6 +34,8 @@ def login(login_model: UserLoginModel, session: SessionDep, settings: SettingsDe
     if user.is_deleted():
         raise UserNotExistedException()
 
-    payload = {'id': user.id, 'account': user.account, 'timestamp': int(time.time())}
-    token = Security.create_token(settings.JwtSecret, payload, expire=settings.TokenExpire)
-    return
+    payload = {"id": user.id, "account": user.account, "timestamp": int(time.time())}
+    token = Security.create_token(
+        settings.JwtSecret, payload, expire=settings.TokenExpire
+    )
+    return SuccessResponse(data={"token": token})
