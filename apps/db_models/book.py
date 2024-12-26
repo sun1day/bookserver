@@ -1,0 +1,24 @@
+"""
+@project: bookserver
+@Name: book.py
+@Auth: Rrsgdl
+@Date: 2024/12/19-9:43
+"""
+
+from .base import Base
+from sqlalchemy.orm import mapped_column, relationship
+from sqlalchemy import BIGINT, VARCHAR, Index
+
+
+class Books(Base):
+    id = mapped_column(BIGINT, primary_key=True, autoincrement=True)
+    hash_value = mapped_column(VARCHAR(32), index=True, nullable=False)
+    name = mapped_column(VARCHAR(256), nullable=False, comment="书名")
+
+    # __table_args__ = (Index("idx_account", "account", unique=True),)  # 创建唯一索引
+
+
+class UserRelateBooks(Base):
+    id = mapped_column(BIGINT, primary_key=True, autoincrement=True)
+    book_id = mapped_column(BIGINT, index=True)
+    user_id = mapped_column(BIGINT, index=True)

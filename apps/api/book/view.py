@@ -4,19 +4,35 @@
 @Auth: Rrsgdl
 @Date: 2024/10/15-14:44
 """
-from fastapi import APIRouter, UploadFile, Request, Depends
+from fastapi import APIRouter, UploadFile, Request, Depends, Query
 from fastapi.responses import ORJSONResponse
 import aiofiles
-from apps.dependencies import get_settings
+from apps.dependencies import get_settings, CurrentUserDep, SessionDep
 import os
 from apps.service.book import BookService
+from apps.db_models.book import Books, UserRelateBooks
+from apps.db_models.user import User
+from apps.lib.response import SuccessResponse
 
 book_router = APIRouter(prefix='/book')
 
 
 @book_router.get('/books')
-def books(page_no: int, page_size: int):
-    return {}
+def books(
+        current_user: CurrentUserDep,
+        session: SessionDep,
+        page_no: int = Query(..., default=1, ge=1),
+        page_size: int = Query(..., default=10, ge=1, le=100)
+):
+    query = session.query(Books).join(UserRelateBooks, Books.id == UserRelateBooks.book_id).filter(
+        UserRelateBooks.user_id == current_user.id).order_by(Books.id.desc())
+
+    count = query.count()
+    items = []
+    if count:
+        items = query.offset((page_no - 1) * page_size).limit(page_size).all()
+
+    return SuccessResponse(data={'total': count, 'items': items})
 
 
 @book_router.post('/books')
