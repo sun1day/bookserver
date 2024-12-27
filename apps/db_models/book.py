@@ -4,8 +4,9 @@
 @Auth: Rrsgdl
 @Date: 2024/12/19-9:43
 """
+import sys
 
-from .base import Base
+from apps.db_models.base import Base
 from sqlalchemy.orm import mapped_column
 from sqlalchemy import BIGINT, VARCHAR
 

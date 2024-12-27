@@ -10,5 +10,5 @@ from typing import Annotated
 
 
 class UserLoginModel(BaseModel):
-    account: Annotated[str, Field(..., max_length=64, min_length=8)]
-    password: Annotated[str, Field(..., max_length=64, min_length=8)]
+    account: Annotated[str, Field(..., max_length=64, min_length=3)]
+    password: Annotated[str, Field(..., max_length=64, min_length=3)]

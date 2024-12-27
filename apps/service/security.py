@@ -23,8 +23,14 @@ class Security:
         return jwt.encode(_payload, secret, algorithm=cls.ALGORITHM)
 
     @classmethod
-    def decode(cls, secret: str, token: str) -> dict[str, t.Any]:
+    def decode(cls, secret: bytes, token: str) -> dict[str, t.Any]:
         try:
-            return jwt.decode(token, secret)['payload']
+            return jwt.decode(token, secret, algorithms=cls.ALGORITHM)['payload']
         except Exception:
             raise InvalidTokenException()
+
+
+if __name__ == '__main__':
+    token1 = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoxLCJhY2NvdW50IjoiXHU2ZDRiXHU4YmQ1XHU4ZDI2XHU1M2Y3IiwidGltZXN0YW1wIjoxNzM1MjkwODczfSwiZXhwIjoxNzM1Mzc3MjczfQ.h4PFP_JeZEhkVzHhrO6vJWPbrag_x800M9YXKsnhH9s"""
+    res = Security.decode(b"\xd7\xcd\xb2\xa7\xcb\x85\x8a\xe9/7'B\xe4X\xa2\x02", token1)
+    print(res)

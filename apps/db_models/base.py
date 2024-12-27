@@ -58,7 +58,7 @@ class Base(ClsTableMiXin, DeclarativeBase):
     __abstract__ = True
     metadata = MetaData(naming_convention=constraint_naming_conventions)
 
-    status = mapped_column(BIGINT, nullable=False, comment="0: 删除. 1: 正常")
+    status = mapped_column(BIGINT, nullable=False, comment="0: 删除. 1: 正常", default=1)
     create_time = mapped_column(
         DateTime(timezone=True),
         default=datetime.utcnow(),
