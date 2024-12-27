@@ -20,6 +20,8 @@ from sqlalchemy import (
 )
 from apps.dependencies import get_settings
 from sqlalchemy.orm import DeclarativeBase, mapped_column, declared_attr, sessionmaker
+from sqlalchemy.ext.asyncio.engine import create_async_engine
+from sqlalchemy.ext.asyncio.session import async_sessionmaker
 from apps.utils.util import hump2underline
 
 settings = get_settings()
@@ -31,8 +33,21 @@ engine = create_engine(
     insertmanyvalues_page_size=500,
 )
 
+# 异步engine
+async_engine = create_async_engine(
+    URL(**settings.SqlalchemyUrlSettings),
+    poolclass=pool.QueuePool,
+    **settings.SqlalchemyPoolSettings,
+    echo=settings.Debug,
+    insertmanyvalues_page_size=500,
+)
+
 LocalSession = sessionmaker(
     engine, autoflush=False, autocommit=False, expire_on_commit=False
+)
+
+LocalAsyncSession = async_sessionmaker(
+    async_engine, autoflush=False, autocommit=False, expire_on_commit=False
 )
 
 # 索引命名映射

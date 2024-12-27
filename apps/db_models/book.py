@@ -12,13 +12,12 @@ from sqlalchemy import BIGINT, VARCHAR, Index
 
 class Books(Base):
     id = mapped_column(BIGINT, primary_key=True, autoincrement=True)
-    hash_value = mapped_column(VARCHAR(32), index=True, nullable=False)
-    name = mapped_column(VARCHAR(256), nullable=False, comment="书名")
-
+    hash_value = mapped_column(VARCHAR(32), unique=True, nullable=False)
     # __table_args__ = (Index("idx_account", "account", unique=True),)  # 创建唯一索引
 
 
 class UserRelateBooks(Base):
     id = mapped_column(BIGINT, primary_key=True, autoincrement=True)
     book_id = mapped_column(BIGINT, index=True)
+    book_name = mapped_column(VARCHAR(128))
     user_id = mapped_column(BIGINT, index=True)

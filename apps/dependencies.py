@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from settings import settings
 from typing import Type, Annotated
 from fastapi import Request, Depends
-from apps.db_models.base import LocalSession
+from apps.db_models.base import LocalSession, LocalAsyncSession
 from apps.db_models.user import User
 from fastapi.security import OAuth2PasswordBearer
 from apps.service.security import Security
@@ -27,6 +27,11 @@ def get_settings():
 
 def get_session():
     with LocalSession() as session:
+        yield session
+
+
+def get_async_session():
+    with LocalAsyncSession as session:
         yield session
 
 
