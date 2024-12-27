@@ -16,8 +16,8 @@ def hump2underline(name):
     return name.lower()  # 将整个字符串转换为小写
 
 
-def login_required(f):
-    f._need_login = True
+def not_protect(f):
+    f._need_login = False
     return f
 
 

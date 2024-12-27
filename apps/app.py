@@ -26,10 +26,15 @@ def register_router(app: FastAPI):
     """注册路由"""
     from apps.api.router import create_router
     app.include_router(create_router(), prefix='/v1/api')
+    # for r in app.routes:
+    #     print(r.path)
     return
 
 
 def register_middleware(app: FastAPI):
+    # 错误处理和时间需要在最后
+    app.add_middleware(ExceptionMiddleware)
+    app.add_middleware(TimerMiddleware)
     app.add_middleware(
         CORSMiddleware,  # noqa
         allow_origins=['*'],
@@ -37,8 +42,4 @@ def register_middleware(app: FastAPI):
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
-    # 错误处理和时间需要在最后
-    app.add_middleware(ExceptionMiddleware)
-    app.add_middleware(TimerMiddleware)
 

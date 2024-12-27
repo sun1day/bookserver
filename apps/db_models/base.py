@@ -4,51 +4,19 @@
 @Auth: Rrsgdl
 @Date: 2024/12/18-17:40
 """
-import datetime as dt
 from datetime import datetime
-import typing as t
 
 from sqlalchemy import (
-    create_engine,
-    URL,
-    pool,
-    DATETIME,
+    DateTime,
     func,
     BIGINT,
     MetaData,
     inspect,
 )
-from apps.dependencies import get_settings
-from sqlalchemy.orm import DeclarativeBase, mapped_column, declared_attr, sessionmaker
-from sqlalchemy.ext.asyncio.engine import create_async_engine
-from sqlalchemy.ext.asyncio.session import async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase, mapped_column, declared_attr
+
 from apps.utils.util import hump2underline
 
-settings = get_settings()
-engine = create_engine(
-    URL(**settings.SqlalchemyUrlSettings),
-    poolclass=pool.QueuePool,
-    **settings.SqlalchemyPoolSettings,
-    echo=settings.Debug,
-    insertmanyvalues_page_size=500,
-)
-
-# 异步engine
-async_engine = create_async_engine(
-    URL(**settings.SqlalchemyUrlSettings),
-    poolclass=pool.QueuePool,
-    **settings.SqlalchemyPoolSettings,
-    echo=settings.Debug,
-    insertmanyvalues_page_size=500,
-)
-
-LocalSession = sessionmaker(
-    engine, autoflush=False, autocommit=False, expire_on_commit=False
-)
-
-LocalAsyncSession = async_sessionmaker(
-    async_engine, autoflush=False, autocommit=False, expire_on_commit=False
-)
 
 # 索引命名映射
 constraint_naming_conventions = {
@@ -61,9 +29,9 @@ constraint_naming_conventions = {
 
 
 class ClsTableMiXin:
-    @declared_attr.directive
+    @declared_attr
     def __tablename__(self):
-        model_name = type(self).__name__
+        model_name = self.__name__
         return hump2underline(model_name)
 
     @classmethod
@@ -92,17 +60,17 @@ class Base(ClsTableMiXin, DeclarativeBase):
 
     status = mapped_column(BIGINT, nullable=False, comment="0: 删除. 1: 正常")
     create_time = mapped_column(
-        DATETIME(timezone=True),
-        default_factory=datetime.utcnow,
+        DateTime(timezone=True),
+        default=datetime.utcnow(),
         nullable=False,
         comment="创建时间",
     )
     update_time = mapped_column(
-        DATETIME(timezone=True),
-        default_factory=datetime.utcnow,
+        DateTime(timezone=True),
+        default=datetime.utcnow,
         server_onupdate=func.now(),
     )
-    delete_time = mapped_column(DATETIME(timezone=True))  # 删除时间
+    delete_time = mapped_column(DateTime(timezone=True))  # 删除时间
 
     def soft_delete(self):
         self.status = 0

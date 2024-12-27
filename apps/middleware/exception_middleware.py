@@ -12,6 +12,8 @@ import traceback
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
+
+from apps.lib.exceptions.exception import InvalidTokenException
 from apps.lib.response import FailResponse
 
 logger = logging.getLogger(__name__)
@@ -23,6 +25,8 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
     ) -> Response:
         try:
             return await call_next(request)
+        except InvalidTokenException as e:
+            return FailResponse(error_msg=e.msg)
         except Exception:
             logger.error(f'path: {request.url}. error: {traceback.format_exc()}')
             return FailResponse(error_msg='System error')

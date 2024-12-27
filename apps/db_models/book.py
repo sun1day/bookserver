@@ -6,8 +6,8 @@
 """
 
 from .base import Base
-from sqlalchemy.orm import mapped_column, relationship
-from sqlalchemy import BIGINT, VARCHAR, Index
+from sqlalchemy.orm import mapped_column
+from sqlalchemy import BIGINT, VARCHAR
 
 
 class Books(Base):

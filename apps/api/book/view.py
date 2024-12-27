@@ -14,18 +14,17 @@ from fastapi import APIRouter, UploadFile, Depends, Query
 from apps.db_models.book import Books, UserRelateBooks
 from apps.dependencies import get_settings, CurrentUserDep, SessionDep
 from apps.lib.response import SuccessResponse
-from apps.utils.util import login_required, sha256_hash
+from apps.utils.util import sha256_hash
 
 book_router = APIRouter(prefix='/book')
 
 
 @book_router.get('/books')
-@login_required
 def books(
         current_user: CurrentUserDep,
         session: SessionDep,
-        page_no: int = Query(..., default=1, ge=1),
-        page_size: int = Query(..., default=10, ge=1, le=100)
+        page_no: int = Query(default=1, ge=1),
+        page_size: int = Query(default=10, ge=1, le=100)
 ):
     query = session.query(UserRelateBooks) \
         .filter(UserRelateBooks.user_id == current_user.id) \
