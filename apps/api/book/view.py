@@ -27,8 +27,9 @@ def books(
         page_no: int = Query(..., default=1, ge=1),
         page_size: int = Query(..., default=10, ge=1, le=100)
 ):
-    query = session.query(Books).join(UserRelateBooks, Books.id == UserRelateBooks.book_id).filter(
-        UserRelateBooks.user_id == current_user.id).order_by(Books.id.desc())
+    query = session.query(UserRelateBooks) \
+        .filter(UserRelateBooks.user_id == current_user.id) \
+        .order_by(UserRelateBooks.id.desc())
 
     count = query.count()
     items = []
