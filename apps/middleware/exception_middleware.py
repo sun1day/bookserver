@@ -33,3 +33,4 @@ class ExceptionMiddleware(BaseHTTPMiddleware):
         except Exception:
             logger.error(f'path: {request.url}. error: {traceback.format_exc()}')
             return FailResponse(error_msg='System error')
+
