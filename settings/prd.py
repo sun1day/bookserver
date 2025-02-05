@@ -11,3 +11,6 @@ class Settings:
     OpenDocsUrl = '/open/docs'
     OpenApiUrl = '/open/openapi.json'
 
+
+def get_settings():
+    return Settings

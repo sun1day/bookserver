@@ -8,48 +8,15 @@
 # dependencies
 import functools
 
-from sqlalchemy import create_engine, pool, URL, AsyncAdaptedQueuePool
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session
 
-from settings import settings as config
+from apps.db.base import LocalSession, LocalAsyncSession
+from settings.settings import Settings, get_settings
 from typing import Annotated
 from fastapi import Request, Depends
 from apps.db_models.user import User
 from apps.service.security import Security
 from apps.lib.exceptions.exception import UserNotExistedException
-
-
-@functools.lru_cache
-def get_settings():
-    return config.Settings
-
-
-settings = get_settings()
-engine = create_engine(
-    URL.create(**settings.SqlalchemyUrlSettings),
-    poolclass=pool.QueuePool,
-    **settings.SqlalchemyPoolSettings,
-    echo=settings.Debug,
-    insertmanyvalues_page_size=500,
-)
-
-# 异步engine
-async_engine = create_async_engine(
-    URL.create(**settings.AsyncSqlalchemyUrlSettings),
-    poolclass=pool.AsyncAdaptedQueuePool,
-    **settings.SqlalchemyPoolSettings,
-    echo=settings.Debug,
-    insertmanyvalues_page_size=500,
-)
-
-LocalSession = sessionmaker(
-    engine, autoflush=False, autocommit=False, expire_on_commit=False
-)
-
-LocalAsyncSession = async_sessionmaker(
-    async_engine, autoflush=False, autocommit=False, expire_on_commit=False
-)
 
 
 def get_session():
@@ -63,7 +30,7 @@ def get_async_session():
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
-SettingsDep = Annotated[config.Settings, Depends(get_settings)]
+SettingsDep = Annotated[Settings, Depends(get_settings)]
 
 
 def parse_token(request: Request, conf: SettingsDep):
