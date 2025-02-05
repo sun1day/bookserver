@@ -8,10 +8,12 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from apps.errors.field_validate_error import FieldValidateError
 from apps.middleware.exception_middleware import ExceptionMiddleware
 from apps.middleware.timer_middleware import TimerMiddleware
 from uvicorn.loops import auto
 from settings.settings import Settings
+from fastapi.exceptions import RequestValidationError
 
 
 def create_app():
@@ -19,6 +21,7 @@ def create_app():
     register_router(app)
     register_middleware(app)
     auto.auto_loop_setup()
+    register_exception(app)
     return app
 
 
@@ -42,4 +45,10 @@ def register_middleware(app: FastAPI):
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+
+def register_exception(app: FastAPI):
+
+    # 参数校验错误
+    app.add_exception_handler(RequestValidationError, FieldValidateError())
 

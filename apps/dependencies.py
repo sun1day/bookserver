@@ -10,7 +10,7 @@ import functools
 
 from sqlalchemy.orm import Session
 
-from apps.db.base import LocalSession, LocalAsyncSession
+from apps.db.mysql import LocalSession, LocalAsyncSession
 from settings.settings import Settings, get_settings
 from typing import Annotated
 from fastapi import Request, Depends

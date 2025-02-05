@@ -7,10 +7,8 @@
 
 from apps.app import create_app
 from uvicorn import run
-from uvicorn.loops import auto
 
 app = create_app()
 
-
-if __name__ == '__main__':
-    run('manage:app', reload=True)
+if __name__ == "__main__":
+    run("manage:app", reload=True)

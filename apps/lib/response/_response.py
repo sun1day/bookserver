@@ -28,7 +28,7 @@ class BaseResponse(Response):
         headers: t.Mapping[str, str] | None = None,
         background: BackgroundTask | None = None,
     ):
-        if code:
+        if code is not None:
             self.code = code
         if data is None:
             data = {}
