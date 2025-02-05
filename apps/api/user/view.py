@@ -43,7 +43,7 @@ def logout(current_user: CurrentUserDep):
     return SuccessResponse()
 
 
-@user_router.post("reset_password")
+@user_router.post("/reset_password")
 def reset_password(
     current_user: CurrentUserDep, reset_model: UserResetPassword, session: SessionDep
 ):
