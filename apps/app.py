@@ -8,7 +8,7 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from apps.errors.field_validate_error import FieldValidateError
+from apps.errors.validate_error import FieldValidateError
 from apps.middleware.exception_middleware import ExceptionMiddleware
 from apps.middleware.timer_middleware import TimerMiddleware
 from uvicorn.loops import auto
