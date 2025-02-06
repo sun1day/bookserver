@@ -21,11 +21,15 @@ from apps.lib.exceptions.exception import UserNotExistedException
 
 def get_session():
     with LocalSession() as session:
-        yield session
+        try:
+            yield session
+        except Exception:
+            session.rollback()
+            raise
 
 
 def get_async_session():
-    with LocalAsyncSession as session:
+    with LocalAsyncSession() as session:
         yield session
 
 
@@ -46,4 +50,8 @@ def current_user(session: SessionDep, payload=Depends(parse_token)):
     return user
 
 
+# 需要登录
+login_required = current_user
+
+# 获取当前用户
 CurrentUserDep = Annotated[User, Depends(current_user)]

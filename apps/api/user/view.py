@@ -9,7 +9,7 @@ import time
 from fastapi import APIRouter
 from fastapi import applications, Depends
 from fastapi import Body
-from .models import UserLoginModel, UserResetPassword
+from .models import UserLoginModel, UserResetPasswordModel
 from apps.service.security import Security
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -23,6 +23,7 @@ user_router = APIRouter(prefix="/user")
 
 @user_router.post("/login")
 def login(login_model: UserLoginModel, session: SessionDep, settings: SettingsDep):
+    """登入"""
     user = (
         session.query(User)
         .filter_by(account=login_model.account, password=login_model.password)
@@ -40,12 +41,13 @@ def login(login_model: UserLoginModel, session: SessionDep, settings: SettingsDe
 
 @user_router.post("/logout")
 def logout(current_user: CurrentUserDep):
+    """登出"""
     return SuccessResponse()
 
 
 @user_router.post("/reset_password")
 def reset_password(
-    current_user: CurrentUserDep, reset_model: UserResetPassword, session: SessionDep
+    current_user: CurrentUserDep, reset_model: UserResetPasswordModel, session: SessionDep
 ):
     """重置密码"""
     if current_user.password != reset_model.password:

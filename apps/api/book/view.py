@@ -12,11 +12,11 @@ import aiofiles
 from fastapi import APIRouter, UploadFile, Depends, Query
 
 from apps.db_models.book import Books, UserRelateBooks
-from apps.dependencies import get_settings, CurrentUserDep, SessionDep
+from apps.dependencies import get_settings, CurrentUserDep, SessionDep, login_required
 from apps.lib.response import SuccessResponse
 from apps.utils.util import sha256_hash
 
-book_router = APIRouter(prefix='/book')
+book_router = APIRouter(prefix='/book', dependencies=[Depends(login_required)])
 
 
 @book_router.get('/books')
@@ -26,6 +26,7 @@ def books(
         page_no: int = Query(default=1, ge=1),
         page_size: int = Query(default=10, ge=1, le=100)
 ):
+    """获取自己的书籍"""
     query = session.query(UserRelateBooks) \
         .filter(UserRelateBooks.user_id == current_user.id) \
         .order_by(UserRelateBooks.id.desc())
@@ -45,6 +46,7 @@ async def books(
         session: SessionDep,
         settings=Depends(get_settings)
 ):
+    """上传书籍"""
     tmp_name = uuid.uuid4()
     file = Path(f'{settings.FilePath}{os.path.sep}{tmp_name}')
     async with aiofiles.open(file, mode='wb') as f:

@@ -17,6 +17,6 @@ class UserLoginModel(BaseModel):
 """修改密码"""
 
 
-class UserResetPassword(BaseModel):
+class UserResetPasswordModel(BaseModel):
     password: Annotated[str, Field(..., max_length=64, min_length=3)]
     new_password: Annotated[str, Field(..., max_length=64, min_length=3, pattern=r'^[A-Za-z0-9_]+$')]
