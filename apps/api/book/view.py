@@ -9,8 +9,9 @@ import uuid
 from pathlib import Path
 
 import aiofiles
-from fastapi import APIRouter, UploadFile, Depends, Query
+from fastapi import APIRouter, UploadFile, Depends, Query, HTTPException
 
+from apps.api.book.models import DeleteBookModel
 from apps.db_models.book import Books, UserRelateBooks
 from apps.dependencies import get_settings, CurrentUserDep, SessionDep, login_required
 from apps.lib.response import SuccessResponse
@@ -77,3 +78,24 @@ async def books(
             file.unlink(missing_ok=True)
 
     return SuccessResponse()
+
+
+@book_router.delete("/books")
+def delete_books(
+    current_user: CurrentUserDep,
+    delete_book_model: DeleteBookModel,
+    session: SessionDep,
+):
+    """删除书籍"""
+    relate = (
+        session.query(UserRelateBooks)
+        .filter_by(user_id=current_user.id, book_id=delete_book_model.book_id, status=1)
+        .one_or_none()
+    )
+    if not relate:
+        return SuccessResponse()
+
+    relate.soft_delete()
+    session.commit()
+    return SuccessResponse()
+

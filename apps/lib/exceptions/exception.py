@@ -14,6 +14,10 @@ class InvalidTokenException(ServiceBaseException):
     msg = "请重新登录"
 
 
-class UserNotExistedException(ServiceBaseException):
+class UserRequestErrorException(ServiceBaseException):
     code = 4000
+    msg = "用户请求错误"
+
+
+class UserNotExistedException(UserRequestErrorException):
     msg = "用户不存在"

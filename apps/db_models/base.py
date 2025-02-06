@@ -48,6 +48,7 @@ class ClsTableMiXin:
                 setattr(self, key, kwargs[key])
         return self
 
+
     def to_dict(self):
         # 返回所有字段字典,日期自动转成可读形式Y-m-d H:M:S
         # 用法 query.to_dict()
