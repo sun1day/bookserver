@@ -15,6 +15,7 @@ class Books(Base):
     """书籍"""
     id = mapped_column(BIGINT, primary_key=True, autoincrement=True)
     hash_value = mapped_column(VARCHAR(32), unique=True, nullable=False)
+    suffix = mapped_column(VARCHAR(32), nullable=False)
     # __table_args__ = (Index("idx_account", "account", unique=True),)  # 创建唯一索引
 
 

@@ -9,18 +9,19 @@ import uuid
 from pathlib import Path
 
 import aiofiles
-from fastapi import APIRouter, UploadFile, Depends, Query, HTTPException
+from fastapi import APIRouter, UploadFile, Depends, Query
+from fastapi.responses import FileResponse
 
 from apps.api.book.models import DeleteBookModel
 from apps.db_models.book import Books, UserRelateBooks
 from apps.dependencies import get_settings, CurrentUserDep, SessionDep, login_required
-from apps.lib.response import SuccessResponse
+from apps.lib.response import SuccessResponse, FailResponse
 from apps.utils.util import sha256_hash
 
 book_router = APIRouter(prefix='/book', dependencies=[Depends(login_required)])
 
 
-@book_router.get('/books')
+@book_router.get('/')
 def books(
         current_user: CurrentUserDep,
         session: SessionDep,
@@ -40,7 +41,7 @@ def books(
     return SuccessResponse(data={'total': count, 'items': items})
 
 
-@book_router.post('/books')
+@book_router.post('/')
 async def books(
         current_user: CurrentUserDep,
         book_file: UploadFile,
@@ -66,7 +67,6 @@ async def books(
             book = Books()
             book.hash_value = hash_value
             session.add(book)
-            session.flush(book)
             user_rela_book = UserRelateBooks()
             user_rela_book.book_id = book.id
             user_rela_book.book_name = book_file.filename
@@ -80,11 +80,11 @@ async def books(
     return SuccessResponse()
 
 
-@book_router.delete("/books")
+@book_router.delete("/")
 def delete_books(
-    current_user: CurrentUserDep,
-    delete_book_model: DeleteBookModel,
-    session: SessionDep,
+        current_user: CurrentUserDep,
+        delete_book_model: DeleteBookModel,
+        session: SessionDep,
 ):
     """删除书籍"""
     relate = (
@@ -99,3 +99,23 @@ def delete_books(
     session.commit()
     return SuccessResponse()
 
+
+"""下载书籍"""
+
+
+@book_router.get('/download/{book_id}')
+def download_books(current_user: CurrentUserDep, session: SessionDep, book_id: int, settings=Depends(get_settings)):
+    books = (
+        session.query(UserRelateBooks, Books)
+        .join(Books, Books.id == UserRelateBooks.book_id)
+        .filter(Books.id == book_id)
+        .filter(UserRelateBooks.user_id == current_user.id, UserRelateBooks.status == 1)
+        .first()
+    )
+    if not books:
+        return FailResponse(error_msg='当前用户没有此书籍!')
+
+    book: Books = books.Books
+    relate: UserRelateBooks = books.UserRelateBooks
+    file_path = Path(f'{settings.FilePath}{os.path.sep}{book.hash_value}')
+    return FileResponse(file_path, filename=relate.book_name)
